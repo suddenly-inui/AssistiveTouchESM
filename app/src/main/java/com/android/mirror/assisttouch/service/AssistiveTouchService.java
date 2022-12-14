@@ -178,9 +178,9 @@ public class AssistiveTouchService extends Service {
 
     private void inflateViewListener(){
         ImageView shutdown = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.shutdown);
-        ImageView star = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.star);
-        ImageView screenshot = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.screenshot);
-        ImageView home = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.home);
+//        ImageView star = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.star);
+//        ImageView screenshot = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.screenshot);
+//        ImageView home = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.home);
 
         shutdown.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,35 +195,35 @@ public class AssistiveTouchService extends Service {
             }
         });
 
-        home.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SystemsUtils.goHome(AssistiveTouchService.this);
-                mTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        mHandler.sendEmptyMessage(0);
-                    }
-                }, 626);
-            }
-        });
-
-        screenshot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mHandler.sendEmptyMessage(0);
-                mTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        String filename = SystemsUtils.takeScreenShot(AssistiveTouchService.this);
-                        Message msg = mHandler.obtainMessage();
-                        msg.what = 1;
-                        msg.obj = filename;
-                        mHandler.sendMessage(msg);
-                    }
-                }, 626);
-            }
-        });
+//        home.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                SystemsUtils.goHome(AssistiveTouchService.this);
+//                mTimer.schedule(new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        mHandler.sendEmptyMessage(0);
+//                    }
+//                }, 626);
+//            }
+//        });
+//
+//        screenshot.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mHandler.sendEmptyMessage(0);
+//                mTimer.schedule(new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        String filename = SystemsUtils.takeScreenShot(AssistiveTouchService.this);
+//                        Message msg = mHandler.obtainMessage();
+//                        msg.what = 1;
+//                        msg.obj = filename;
+//                        mHandler.sendMessage(msg);
+//                    }
+//                }, 626);
+//            }
+//        });
     }
 
     private ValueAnimator myAssitiveTouchAnimator(final int fromx, final int tox, int fromy, final int toy, final boolean flag){
