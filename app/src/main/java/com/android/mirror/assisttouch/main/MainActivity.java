@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import com.android.mirror.assisttouch.MyAdminReceiver;
 import com.android.mirror.assisttouch.service.AssistiveTouchService;
@@ -33,15 +32,12 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, 0);
 
         startBtn = (Button)findViewById(R.id.startBtn);
-        startBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AssistiveTouchService.class);
-                if(isMyServiceRunning(AssistiveTouchService.class))
-                    stopService(intent);
-                else
-                    startService(intent);
-            }
+        startBtn.setOnClickListener(v -> {
+            Intent intent1 = new Intent(MainActivity.this, AssistiveTouchService.class);
+            if(isMyServiceRunning(AssistiveTouchService.class))
+                stopService(intent1);
+            else
+                startService(intent1);
         });
     }
 

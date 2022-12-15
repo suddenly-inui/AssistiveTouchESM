@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:alpha="0.85"
-    android:background="@android:color/transparent">
+    android:background="@android:color/transparent"
+    >
 
     <ImageView
         android:alpha="0.85"
@@ -12,6 +13,7 @@
         android:layout_height="58dp"
         android:layout_margin="1dp"
         android:src="@drawable/icon"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        />
 
 </LinearLayout>
