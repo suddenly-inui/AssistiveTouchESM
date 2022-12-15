@@ -29,6 +29,15 @@ import androidx.core.content.res.ResourcesCompat;
 import com.android.mirror.assisttouch.R;
 import com.android.mirror.assisttouch.utils.SystemsUtils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -174,24 +183,65 @@ public class AssistiveTouchService extends Service {
                     mAssistiveTouchView.setAlpha(1);
                 }
             });*/
-        });
+        });  //AT押下時の処理
     }
+
+    public void HTTPPost(String u, String json) throws IOException{
+
+        URL url = new URL(u);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setDoInput(true);
+        conn.setDoOutput(true);
+        conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+        conn.connect();
+
+        //送信したいデータ
+        PrintStream ps = new PrintStream(conn.getOutputStream());
+        ps.print(json);
+        ps.close();
+
+        if (conn.getResponseCode() != 200) {
+            throw new IOException();
+        }
+        //HttpURLConnectionからInputStreamを取得し、読み出す
+        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+
+        StringBuilder sb = new StringBuilder();
+        String line;
+
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+
+        // 5.InputStreamを閉じる
+        br.close();
+    };
 
     private void inflateViewListener(){
         ImageView shutdown = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.shutdown);
-//        ImageView star = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.star);
-//        ImageView screenshot = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.screenshot);
-//        ImageView home = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.home);
-
         shutdown.setOnClickListener(v -> {
-            SystemsUtils.shutDown(AssistiveTouchService.this);
-            mTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    mHandler.sendEmptyMessage(0);
+                    //電源オフ」
+                    SystemsUtils.shutDown(AssistiveTouchService.this);
+
+                    //ATを格納
+                    mTimer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            mHandler.sendEmptyMessage(0);
+                        }
+                    }, 600);
+
+                    //HTTP　POST
+                    String url = "localhost:8000";
+                    String message = "{'id': 0, 'emotion': 0}";
+                    try {
+                        HTTPPost(url, message);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }, 626);
-        });
+        );
 
 //        home.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -338,9 +388,6 @@ public class AssistiveTouchService extends Service {
     private class MyHandler extends Handler{
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == 2) {
-                mAlertDialog.dismiss();
-            }
             mPopupWindow.dismiss();
             super.handleMessage(msg);
         }
