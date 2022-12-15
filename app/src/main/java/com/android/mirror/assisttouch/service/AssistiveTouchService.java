@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Intent;
@@ -14,7 +13,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
+
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -24,22 +23,20 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
-import androidx.core.content.res.ResourcesCompat;
-
 import com.android.mirror.assisttouch.R;
 import com.android.mirror.assisttouch.utils.SystemsUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 import java.util.Timer;
 import java.util.TimerTask;
+
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class AssistiveTouchService extends Service {
 
@@ -168,55 +165,34 @@ public class AssistiveTouchService extends Service {
             mPopupWindow.setTouchable(true);
             mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
             mPopupWindow.showAtLocation(mAssistiveTouchView, Gravity.CENTER, 0, 0);  //TODO: ここ治す
-
-            /*mAlertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-            mAlertDialog.show();
-            WindowManager.LayoutParams alertDialogParams = mAlertDialog.getWindow().getAttributes();
-            alertDialogParams.width = (int)(mScreenWidth*0.75);
-            alertDialogParams.height = (int)(mScreenWidth*0.75);
-            alertDialogParams.alpha = 0.85F;
-            mAlertDialog.getWindow().setAttributes(alertDialogParams);
-            mAlertDialog.getWindow().setContentView(mInflateAssistiveTouchView);
-            mAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    mAssistiveTouchView.setAlpha(1);
-                }
-            });*/
         });  //AT押下時の処理
     }
 
-    public void HTTPPost(String u, String json) throws IOException{
+    public void HTTPPost(String u, String json) throws IOException {
+        okhttp3.MediaType mediaTypeJson = okhttp3.MediaType.parse("application/json; charset=utf-8");
+        RequestBody requestBody = RequestBody.create(mediaTypeJson, json);
 
-        URL url = new URL(u);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setDoInput(true);
-        conn.setDoOutput(true);
-        conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-        conn.connect();
+        final Request request = new Request.Builder()
+                .url(u)
+                .post(requestBody)
+                .build();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .build();
 
-        //送信したいデータ
-        PrintStream ps = new PrintStream(conn.getOutputStream());
-        ps.print(json);
-        ps.close();
+        client.newCall(request).enqueue(new okhttp3.Callback(){
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
 
-        if (conn.getResponseCode() != 200) {
-            throw new IOException();
-        }
-        //HttpURLConnectionからInputStreamを取得し、読み出す
-        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                final String resString = response.body().string();
+                //view更新のときは handler#post()する
+            }
 
-        StringBuilder sb = new StringBuilder();
-        String line;
-
-        while ((line = br.readLine()) != null) {
-            sb.append(line);
-        }
-
-        // 5.InputStreamを閉じる
-        br.close();
-    };
+            @Override
+            public void onFailure(Call call, IOException arg1) {
+                System.out.println(arg1);
+            }
+        });
+    }
 
     private void inflateViewListener(){
         ImageView shutdown = (ImageView)mInflateAssistiveTouchView.findViewById(R.id.shutdown);
@@ -233,45 +209,21 @@ public class AssistiveTouchService extends Service {
                     }, 600);
 
                     //HTTP　POST
-                    String url = "localhost:8000";
-                    String message = "{'id': 0, 'emotion': 0}";
+                    String url = "http://133.27.186.95";
+                    final String json =
+                        "{\"user\":{" +
+                            "\"name\":\"name1\","+
+                            "\"password\":\"password\","+
+                            "\"password_confirmation\":\"password\""+
+                            "}}";
                     try {
-                        HTTPPost(url, message);
+                        HTTPPost(url, json);
                     } catch (IOException e) {
                         e.printStackTrace();
+                        System.out.println(e);
                     }
                 }
         );
-
-//        home.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                SystemsUtils.goHome(AssistiveTouchService.this);
-//                mTimer.schedule(new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        mHandler.sendEmptyMessage(0);
-//                    }
-//                }, 626);
-//            }
-//        });
-//
-//        screenshot.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mHandler.sendEmptyMessage(0);
-//                mTimer.schedule(new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        String filename = SystemsUtils.takeScreenShot(AssistiveTouchService.this);
-//                        Message msg = mHandler.obtainMessage();
-//                        msg.what = 1;
-//                        msg.obj = filename;
-//                        mHandler.sendMessage(msg);
-//                    }
-//                }, 626);
-//            }
-//        });
     }  // ポップアップ内の機能押下時の処理
 
     private ValueAnimator myAssistiveTouchAnimator(final int fromx, final int tox, int fromy, final int toy, final boolean flag){
@@ -297,33 +249,6 @@ public class AssistiveTouchService extends Service {
         });
         return v1;
     }
-
-//    /*private ValueAnimator mSceenShotAnimator(){
-//        PropertyValuesHolder p1 = PropertyValuesHolder.ofFloat("scaleX", 1, 0);
-//        PropertyValuesHolder p2 = PropertyValuesHolder.ofFloat("scaleY", 1, 0);
-//        ValueAnimator v1 = ValueAnimator.ofPropertyValuesHolder(p1, p2);
-//        v1.setDuration(5000L);
-//        v1.setInterpolator(new DecelerateInterpolator());
-//        v1.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                Float scaleX = (Float) animation.getAnimatedValue("scaleX");
-//                Float scaleY = (Float) animation.getAnimatedValue("scaleY");
-//                *//*mScreenShotView.setScaleX(scaleX);
-//                mScreenShotView.setScaleY(scaleY);*//*
-//                *//*WindowManager.LayoutParams lp = mAlertDialog.getWindow().getAttributes();
-//                lp.width = (int)(scaleX * mScreenWidth);
-//                lp.height = (int)(scaleY * mScreenHeight);
-//                mAlertDialog.getWindow().setAttributes(lp);*//*
-//                *//*ViewGroup.LayoutParams lp = mScreenShotView.getLayoutParams();
-//                lp.width = (int)(scaleX * mScreenWidth);
-//                lp.height = (int)(scaleY * mScreenHeight);*//*
-//                //mScreenShotView
-//                mScreenShotView.setLayoutParams(new FrameLayout.LayoutParams((int)(scaleX * mScreenWidth), (int)(scaleY * mScreenHeight) ));
-//            }
-//        });
-//        return v1;
-//    }*/
 
     private void setAssitiveTouchViewAlign(){
         int mAssistiveTouchViewWidth = mAssistiveTouchView.getMeasuredWidth();
