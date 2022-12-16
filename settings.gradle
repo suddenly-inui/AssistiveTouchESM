@@ -1,1 +1,17 @@
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
+    }
+}
+
+//なぞ
+//sourceControl {
+//    gitRepository("https://github.com/gradle/native-samples-cpp-library.git") {
+//        producesModule("org.gradle.cpp-samples:utilities")
+//    }
+//}
+
 include ':app'
