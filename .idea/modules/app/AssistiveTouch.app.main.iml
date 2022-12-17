@@ -34,8 +34,8 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/50532811cfc8c8de6864b5346c8c57c0/transformed/lifecycle-viewmodel-2.5.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/3bb9d75da67e7fa9afb84075f06901c1/transformed/versionedparcelable-1.1.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.collection/collection/1.1.0/1f27220b47669781457de0d600849a5de0e89909/collection-1.1.0.jar</arg>
-                <arg>$USER_HOME$/.gradle/caches/transforms-3/c74b4b527647a1f6819854f688973001/transformed/work-runtime-ktx-2.7.0-api.jar</arg>
-                <arg>$USER_HOME$/.gradle/caches/transforms-3/fdad8ec03d69583358dce508f0b906b7/transformed/work-runtime-2.7.0-api.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/b774065610f09ddd77278dcec06d94fb/transformed/work-runtime-ktx-2.7.1-api.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/371c3effc358ce7e166de6da3e2d77ab/transformed/work-runtime-2.7.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/fad202c436596055242e16946472101e/transformed/lifecycle-livedata-2.1.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/f280d714149f66044592bcb95677504f/transformed/core-runtime-2.1.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.arch.core/core-common/2.1.0/b3152fc64428c9354344bd89848ecddc09b6f07e/core-common-2.1.0.jar</arg>
@@ -186,8 +186,8 @@
     <orderEntry type="library" name="Gradle: androidx.loader:loader:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-livedata:2.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.arch.core:core-runtime:2.1.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.work:work-runtime-ktx:2.7.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.work:work-runtime:2.7.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.work:work-runtime-ktx:2.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.work:work-runtime:2.7.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.startup:startup-runtime:1.1.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.KarasawaTakumi0621:aware_appusage_plugin:ver1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.awareframework:com.awareframework.android.core:master-SNAPSHOT@aar" level="project" />
