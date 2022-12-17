@@ -2,6 +2,7 @@ package com.android.mirror.assisttouch.main;
 
 import android.app.ActivityManager;
 import android.app.admin.DevicePolicyManager;
+import android.app.usage.UsageEvents;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,11 @@ import com.android.mirror.assisttouch.MyAdminReceiver;
 import com.android.mirror.assisttouch.service.AssistiveTouchService;
 import com.android.mirror.assisttouch.R;
 import com.android.mirror.assisttouch.utils.SystemsUtils;
+
+
+import com.awareframework.android.sensor.aware_appusage.AppusageSensor;
+import com.awareframework.android.core.db.Engine;
+import com.awareframework.android.sensor.aware_appusage.model.AppusageData;
 
 public class MainActivity extends AppCompatActivity {
 
