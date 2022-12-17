@@ -32,6 +32,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"//追加。
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"//リフレクション（プロパティ名やクラス名取得）を利用するときは追加
+    implementation 'androidx.work:work-runtime-ktx:2.7.0'
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.14.1'
 

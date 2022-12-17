@@ -96,7 +96,7 @@ class AssistiveTouchService : Service() {
         mParams!!.format = PixelFormat.RGBA_8888
         mParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         mWindowManager!!.addView(mAssistiveTouchView, mParams)
-        mAssistiveTouchView!!.setOnTouchListener { v, event ->
+        mAssistiveTouchView!!.setOnTouchListener { _, event ->
             rawX = event.rawX
             rawY = event.rawY
             when (event.action) {
@@ -113,7 +113,7 @@ class AssistiveTouchService : Service() {
             isMoving
         } // ATに触れた時の処理
 
-        mAssistiveTouchView!!.setOnClickListener { v: View? ->   //AT押下時の処理
+        mAssistiveTouchView!!.setOnClickListener {     //AT押下時の処理
             mAssistiveTouchView!!.alpha = 0f
             lastAssistiveTouchViewX = mParams!!.x
             lastAssistiveTouchViewY = mParams!!.y
@@ -164,6 +164,7 @@ class AssistiveTouchService : Service() {
             override fun onResponse(call: Call, response: Response) {
                 val resString = response.body()!!.string()
                 //view更新のときは handler#post()する
+                println(resString)
             }
 
             override fun onFailure(call: Call, arg1: IOException) {
@@ -174,7 +175,7 @@ class AssistiveTouchService : Service() {
 
     private fun inflateViewListener() {
         val shutdown = mInflateAssistiveTouchView!!.findViewById<View>(R.id.shutdown) as ImageView
-        shutdown.setOnClickListener { v: View? ->
+        shutdown.setOnClickListener {
             //電源オフ」
             SystemsUtils.shutDown(this@AssistiveTouchService)
 
