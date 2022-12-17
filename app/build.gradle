@@ -1,7 +1,7 @@
-plugins {
-    id("maven-publish")
-    id('com.android.application')
-}
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
+apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 33
@@ -30,7 +30,11 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"//追加。
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"//リフレクション（プロパティ名やクラス名取得）を利用するときは追加
+
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.14.1'
+
     implementation 'com.github.KarasawaTakumi0621:aware_appusage_plugin:ver1.0'
     implementation 'com.github.kittinunf.fuel:fuel-android:2.3.1'
 }
