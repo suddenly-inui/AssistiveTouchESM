@@ -1,32 +1,28 @@
 package com.android.mirror.assisttouch.service
 
 import android.animation.Animator
-import android.widget.PopupWindow
-import android.content.Intent
-import android.os.IBinder
-import com.android.mirror.assisttouch.service.AssistiveTouchService.MyHandler
-import com.android.mirror.assisttouch.R
-import android.util.DisplayMetrics
-import com.android.mirror.assisttouch.utils.SystemsUtils
-import android.graphics.PixelFormat
-import android.view.View.OnTouchListener
-import android.graphics.drawable.BitmapDrawable
-import kotlin.Throws
-import android.animation.ValueAnimator
-import android.animation.PropertyValuesHolder
-import android.view.animation.DecelerateInterpolator
-import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.AnimatorListenerAdapter
+import android.animation.PropertyValuesHolder
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Service
+import android.content.Intent
+import android.graphics.PixelFormat
+import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
+import android.os.IBinder
 import android.os.Message
 import android.view.*
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import android.widget.PopupWindow
+import com.android.mirror.assisttouch.R
+import com.android.mirror.assisttouch.utils.SystemsUtils
 import okhttp3.*
 import java.io.IOException
 import java.util.*
+
 
 class AssistiveTouchService : Service() {
     private var isMoving = false
@@ -87,21 +83,23 @@ class AssistiveTouchService : Service() {
 
     @SuppressLint("ClickableViewAccessibility")
     fun createAssistiveTouchView() {
-        mParams!!.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+        mParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         mParams!!.width = WindowManager.LayoutParams.WRAP_CONTENT
         mParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
         mParams!!.x = mScreenWidth
         mParams!!.y = 520
-        mParams!!.gravity = Gravity.TOP or Gravity.START // LEFT
+        mParams!!.gravity = Gravity.TOP or Gravity.START
         mParams!!.format = PixelFormat.RGBA_8888
         mParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         mWindowManager!!.addView(mAssistiveTouchView, mParams)
-        mAssistiveTouchView!!.setOnTouchListener { _, event ->
+        mAssistiveTouchView!!.setOnTouchListener { v, event ->  //ここ！
             rawX = event.rawX
             rawY = event.rawY
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> isMoving = false
-                MotionEvent.ACTION_UP -> setAssitiveTouchViewAlign() // 角に戻る処理
+                MotionEvent.ACTION_UP -> {
+                    setAssitiveTouchViewAlign()
+                } // 角に戻る処理
                 MotionEvent.ACTION_MOVE -> {
                     isMoving = true
                     mParams!!.x = (rawX - mAssistiveTouchView!!.measuredWidth / 2).toInt()
@@ -145,7 +143,7 @@ class AssistiveTouchService : Service() {
             mPopupWindow!!.isFocusable = true
             mPopupWindow!!.isTouchable = true
             mPopupWindow!!.setBackgroundDrawable(BitmapDrawable())
-            mPopupWindow!!.showAtLocation(mAssistiveTouchView, Gravity.CENTER, 0, 0) //TODO: ここ治す
+            mPopupWindow!!.showAtLocation(mAssistiveTouchView, Gravity.CENTER, 0, 0)
         } //AT押下時の処理
     }
 
