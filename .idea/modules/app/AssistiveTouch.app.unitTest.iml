@@ -46,10 +46,12 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/4072333f9a52027579bd488e90d860c9/transformed/jetified-annotation-experimental-1.1.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/6b164892eb981f8ebda5953a8cbf81a6/transformed/jetified-listenablefuture-1.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/894a7eea414a4574d31ced3b30b43f7d/transformed/jetified-kotlin-reflect-1.7.20.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/b2378f057608b14e9cb7256eb83a91e0/transformed/jetified-okhttp-4.10.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/116b3b68a82d04711626398aac3e9339/transformed/jetified-fuel-android-2.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/d1765a06360a3f4d68884dd63427550a/transformed/jetified-aware_appusage_plugin-ver1.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/c815a82dfd3af8fc67a0dab4b5a2c24d/transformed/jetified-kotlinx-coroutines-core-jvm-1.6.1.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/24a6db4588b14e602e31dfa797791b8c/transformed/jetified-kotlinx-coroutines-android-1.6.1.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/ed929332c9f2a54ebb8dc88f97846702/transformed/jetified-okio-jvm-3.0.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/4e6f559f14f2e3380a29f008bc7e6e23/transformed/jetified-kotlin-stdlib-jdk8-1.6.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/0c541ee93b4f7041e596ad4e10b00fb9/transformed/jetified-kotlin-android-extensions-runtime-1.4.10.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/d031b350cadab9764f1be4066c58c0ee/transformed/jetified-kotlin-stdlib-jdk7-1.6.0.jar</arg>
@@ -57,8 +59,6 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/b24048e9020fb5407afb9ec7be98e846/transformed/jetified-kotlin-stdlib-common-1.7.20.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/9617fac122dfc554e341d8aae1b66382/transformed/jetified-annotations-13.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/2f9270e734594b46f98c8041ce34759e/transformed/jetified-startup-runtime-1.1.1-api.jar</arg>
-                <arg>$USER_HOME$/.gradle/caches/transforms-3/b5838626434c6fb133a25bc1acc5c2a2/transformed/jetified-okhttp-3.14.1.jar</arg>
-                <arg>$USER_HOME$/.gradle/caches/transforms-3/508596663819c287219f9ed3c80ab5ca/transformed/jetified-okio-1.17.2.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/8c856146f110d8771c4913fce50bb1cb/transformed/jetified-com.awareframework.android.core-master-SNAPSHOT-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/baadeebacdf48f334a5e1b8ce90ecd80/transformed/jetified-fuel-2.3.1.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/907b6d5b695fa2069022b5c84d22aa86/transformed/jetified-result-3.1.0.jar</arg>
@@ -148,8 +148,8 @@
     <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.7.20" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.google.guava:listenablefuture:1.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.squareup.okhttp3:okhttp:3.14.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.squareup.okio:okio:1.17.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.squareup.okhttp3:okhttp:4.10.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.squareup.okio:okio-jvm:3.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-android-extensions-runtime:1.4.10" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.github.kittinunf.fuel:fuel:2.3.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.github.kittinunf.result:result:3.1.0" level="project" />

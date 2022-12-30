@@ -38,20 +38,22 @@ class MainActivity : AppCompatActivity() {
         val componentName = ComponentName(this, MyAdminReceiver::class.java)
         val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
-        startActivityForResult(intent, 0)  //TODO: 治す
+        startActivityForResult(intent, 0)  //TODO: 直す
 
+        // Permissions
         if(checkOverlayPermission()){
             println("Overlay permission true")
         }else{
             requestOverlayPermission()
         }
 
-        if(!checkReadStatsPermission()){
-            startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-        }else{
+        if(checkReadStatsPermission()){
             println("ReadStates permission true")
+        }else{
+            startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         }
 
+        // Start or Stop
         startBtn = findViewById<View>(R.id.startBtn) as Button
         startBtn!!.setOnClickListener {
             val intent1 = Intent(this@MainActivity, AssistiveTouchService::class.java)
@@ -66,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    // Aware pappusage plugin
+        //Aware pappusage plugin
 //    private fun aware(){
 //        AppusageSensor.start(applicationContext, AppusageSensor.Config().apply {
 //

@@ -20,6 +20,7 @@ import android.widget.PopupWindow
 import com.android.mirror.assisttouch.R
 import com.android.mirror.assisttouch.utils.SystemsUtils
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.IOException
 import java.util.*
 
@@ -92,7 +93,7 @@ class AssistiveTouchService : Service() {
         mParams!!.format = PixelFormat.RGBA_8888
         mParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         mWindowManager!!.addView(mAssistiveTouchView, mParams)
-        mAssistiveTouchView!!.setOnTouchListener { v, event ->  //ここ！
+        mAssistiveTouchView!!.setOnTouchListener { _, event ->  //ここ！
             rawX = event.rawX
             rawY = event.rawY
             when (event.action) {
@@ -112,22 +113,24 @@ class AssistiveTouchService : Service() {
         } // ATに触れた時の処理
 
         mAssistiveTouchView!!.setOnClickListener {     //AT押下時の処理
-            mAssistiveTouchView!!.alpha = 0f
+            //mAssistiveTouchView!!.alpha = 0f
             lastAssistiveTouchViewX = mParams!!.x
             lastAssistiveTouchViewY = mParams!!.y
-            myAssistiveTouchAnimator(
-                mParams!!.x,
-                mScreenWidth / 2 - (mScreenWidth * 0.75 / 2).toInt(),
-                mParams!!.y,
-                mScreenHeight / 2 - (mScreenWidth * 0.75 / 2).toInt(),
-                false
-            ).start()
-            mParams!!.width = (mScreenWidth * 0.75).toInt()
-            mParams!!.height = (mScreenWidth * 0.75).toInt()
+//            myAssistiveTouchAnimator(
+//                mParams!!.x,
+//                mScreenWidth / 2 - (mScreenWidth * 0.75 / 2).toInt(),
+//                mParams!!.y,
+//                mScreenHeight / 2 - (mScreenWidth * 0.75 / 2).toInt(),
+//                false
+//            ).start()
+//            mParams!!.width = mScreenWidth
+//            mParams!!.height = (mScreenWidth * 0.75).toInt()
             mWindowManager!!.updateViewLayout(mAssistiveTouchView, mParams)
             mPopupWindow = PopupWindow(mInflateAssistiveTouchView)
-            mPopupWindow!!.width = (mScreenWidth * 0.75).toInt() // 横
+            mPopupWindow!!.width = mScreenWidth // 横
             mPopupWindow!!.height = (mScreenWidth * 0.75).toInt() //縦
+
+            //  ポップアップが閉じる処理
             mPopupWindow!!.setOnDismissListener {
                 mParams!!.width = WindowManager.LayoutParams.WRAP_CONTENT
                 mParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
@@ -139,7 +142,8 @@ class AssistiveTouchService : Service() {
                     true
                 ).start()
                 mAssistiveTouchView!!.alpha = 1f
-            } //  ポップアップが閉じる処理
+            }
+
             mPopupWindow!!.isFocusable = true
             mPopupWindow!!.isTouchable = true
             mPopupWindow!!.setBackgroundDrawable(BitmapDrawable())
@@ -149,7 +153,7 @@ class AssistiveTouchService : Service() {
 
     @Throws(IOException::class)
     fun HTTPPost(u: String, json: String) {
-        val mediaTypeJson = MediaType.parse("application/json; charset=utf-8")
+        val mediaTypeJson = ("application/json; charset=utf-8").toMediaTypeOrNull()
         val requestBody = RequestBody.create(mediaTypeJson, json)
         val request = Request.Builder()
             .url(u)
@@ -160,13 +164,13 @@ class AssistiveTouchService : Service() {
         client.newCall(request).enqueue(object : Callback {
             @Throws(IOException::class)
             override fun onResponse(call: Call, response: Response) {
-                val resString = response.body()!!.string()
+                val resString = response.body!!.string()
                 //view更新のときは handler#post()する
                 println(resString)
             }
 
-            override fun onFailure(call: Call, arg1: IOException) {
-                println(arg1)
+            override fun onFailure(call: Call, e: IOException) {
+                println(e)
             }
         })
     }

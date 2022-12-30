@@ -19,13 +19,5 @@
             android:layout_height="62dp"
             android:src="@drawable/shutdown"/>
 
-        <TextView
-            android:textSize="12sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/shutdown"
-            android:layout_centerHorizontal="true"
-            android:text="電源"/>
-
     </RelativeLayout>
 </RelativeLayout>

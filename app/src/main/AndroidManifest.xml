@@ -13,6 +13,7 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="true"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         >
         <activity
             android:name=".main.MainActivity"
