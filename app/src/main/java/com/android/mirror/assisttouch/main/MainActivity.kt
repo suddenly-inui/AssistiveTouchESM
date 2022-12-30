@@ -111,6 +111,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun Context.checkOverlayPermission(): Boolean {
+        if (Build.VERSION.SDK_INT < 23) {
+            return true
+        }
         return Settings.canDrawOverlays(this)
     }
 

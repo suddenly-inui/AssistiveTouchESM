@@ -10,6 +10,7 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
@@ -23,6 +24,7 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.IOException
 import java.util.*
+import kotlin.math.log
 
 
 class AssistiveTouchService : Service() {
@@ -67,7 +69,7 @@ class AssistiveTouchService : Service() {
         mAlertDialog = mBulider!!.create()
         mParams = WindowManager.LayoutParams()
         mWindowManager = this.getSystemService(WINDOW_SERVICE) as WindowManager
-        mInflater = LayoutInflater.from(this)
+        mInflater = LayoutInflater.from(this@AssistiveTouchService)
         mAssistiveTouchView = mInflater?.inflate(R.layout.assistive_touch_layout, null)
         mInflateAssistiveTouchView =
             mInflater?.inflate(R.layout.assistive_touch_inflate_layout, null)
@@ -84,7 +86,10 @@ class AssistiveTouchService : Service() {
 
     @SuppressLint("ClickableViewAccessibility")
     fun createAssistiveTouchView() {
-        mParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        mParams!!.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+        if (Build.VERSION.SDK_INT > 25){
+            mParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        }
         mParams!!.width = WindowManager.LayoutParams.WRAP_CONTENT
         mParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
         mParams!!.x = mScreenWidth
@@ -93,7 +98,8 @@ class AssistiveTouchService : Service() {
         mParams!!.format = PixelFormat.RGBA_8888
         mParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         mWindowManager!!.addView(mAssistiveTouchView, mParams)
-        mAssistiveTouchView!!.setOnTouchListener { _, event ->  //ここ！
+
+        mAssistiveTouchView!!.setOnTouchListener { v, event ->
             rawX = event.rawX
             rawY = event.rawY
             when (event.action) {
@@ -123,8 +129,11 @@ class AssistiveTouchService : Service() {
 //                mScreenHeight / 2 - (mScreenWidth * 0.75 / 2).toInt(),
 //                false
 //            ).start()
-//            mParams!!.width = mScreenWidth
-//            mParams!!.height = (mScreenWidth * 0.75).toInt()
+
+            if(Build.VERSION.SDK_INT < 26){
+                mParams!!.width = mScreenWidth
+                mParams!!.height = (mScreenWidth * 0.75).toInt()
+            }
             mWindowManager!!.updateViewLayout(mAssistiveTouchView, mParams)
             mPopupWindow = PopupWindow(mInflateAssistiveTouchView)
             mPopupWindow!!.width = mScreenWidth // 横
