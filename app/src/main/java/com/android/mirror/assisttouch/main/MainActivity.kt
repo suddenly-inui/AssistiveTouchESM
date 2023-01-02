@@ -15,6 +15,10 @@ import android.app.AppOpsManager
 import android.app.usage.UsageEvents
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -23,12 +27,23 @@ import android.view.View
 import android.widget.Button
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import com.android.mirror.assisttouch.service.SensorService
+import com.android.mirror.assisttouch.service.SensorServiceInterface
+import com.android.mirror.assisttouch.service.SensorServiceListener
 import com.awareframework.android.core.db.Engine
 import com.awareframework.android.sensor.aware_appusage.AppusageSensor
 import com.awareframework.android.sensor.aware_appusage.model.AppusageData
+import java.security.Timestamp
+import java.sql.Time
+import java.text.SimpleDateFormat
+import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
+
     private var startBtn: Button? = null
+    private var sensorManager: SensorManager? = null
+    val sensorService = SensorService(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -64,31 +79,56 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Sensors
+        sensorService.setListener(sensorListener)
+        sensorService.start()
+        }
 
+    private val sensorListener = object : SensorServiceInterface {
+        override fun onSensorChanged(sensorType: Int, values: FloatArray) {
+            var idx = -1
+            for (i in 0 until sensorService.sensors.size) {
+                if (sensorService.sensors[i].type == sensorType) {
+                    idx = i
+                }
+            }
+            if (idx != -1) {
+                for(i in values.indices){
+                    Log.d("SensorData", "$sensorType ${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]} ${values[i]}")
+                }
+            }
+        }
 
+        override fun onAccuracyChanged(sensorType: Int, accuracy: Int) {}
     }
 
-        //Aware pappusage plugin
-//    private fun aware(){
-//        AppusageSensor.start(applicationContext, AppusageSensor.Config().apply {
-//
-//            interval = 1000 //1sec
-//            usageAppDisplaynames = mutableListOf("com.twitter.android", "com.facebook.orca", "com.facebook.katana", "com.instagram.android", "jp.naver.line.android", "com.ss.android.ugc.trill")
-//            usageAppEventTypes = mutableListOf(UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_RESUMED)
-//
-//            awareUsageAppNotificationTitle = "studying now"
-//            awareUsageAppNotificationDescription = "App usage history is being retrieved."
-//            awareUsageAppNoticationId = "appusage_notification"
-//
-//            dbType = Engine.DatabaseType.ROOM
-//
-//            sensorObserver = object : AppusageSensor.Observer {
-//                override fun onDataChanged(datas: MutableList<AppusageData>?) {
-//                    println("ondatachanged in mainActivity $datas")
-//                }
-//            }
-//        })
-//    }
+    override fun onDestroy() {
+        super.onDestroy()
+        sensorService.stop()
+    }
+
+    //Aware pappusage plugin
+    private fun aware(){
+        AppusageSensor.start(applicationContext, AppusageSensor.Config().apply {
+
+            interval = 1000 //1min
+            usageAppDisplaynames = mutableListOf("android")
+            usageAppEventTypes = mutableListOf(UsageEvents.Event.SCREEN_NON_INTERACTIVE, UsageEvents.Event.SCREEN_INTERACTIVE)
+
+            awareUsageAppNotificationTitle = "studying now"
+            awareUsageAppNotificationDescription = "App usage history is being retrieved."
+            awareUsageAppNoticationId = "appusage_notification"
+
+            dbType = Engine.DatabaseType.ROOM
+
+            sensorObserver = object : AppusageSensor.Observer {
+                override fun onDataChanged(datas: MutableList<AppusageData>?) {
+                    println("ondatachanged in mainActivity $datas")
+                    //ここをいじる
+                }
+            }
+        })
+    }
 
 
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
