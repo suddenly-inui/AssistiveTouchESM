@@ -5,6 +5,10 @@ import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.admin.DevicePolicyManager
 import android.content.*
+import android.app.usage.UsageEvents
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.SensorManager
 import android.net.Uri
@@ -28,6 +32,9 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import com.awareframework.android.core.db.Engine
+import com.awareframework.android.sensor.aware_appusage.AppusageSensor
+import com.awareframework.android.sensor.aware_appusage.model.AppusageData
 import java.util.*
 
 class MainActivity : AppCompatActivity(){
