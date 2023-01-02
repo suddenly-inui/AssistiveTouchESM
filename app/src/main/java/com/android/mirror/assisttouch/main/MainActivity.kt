@@ -15,6 +15,10 @@ import android.app.AppOpsManager
 import android.app.usage.UsageEvents
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -26,8 +30,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.awareframework.android.core.db.Engine
 import com.awareframework.android.sensor.aware_appusage.AppusageSensor
 import com.awareframework.android.sensor.aware_appusage.model.AppusageData
+import java.security.Timestamp
+import java.sql.Time
+import java.text.SimpleDateFormat
+import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SensorEventListener{
+
+    private var sensorManager: SensorManager? = null
+    private var accSensor: Sensor? = null
+    private var gyroSensor: Sensor? = null
+
     private var startBtn: Button? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,31 +77,41 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-
+        // Sensors
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+        accSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        gyroSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        sensorManager!!.registerListener(this, accSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager!!.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
-        //Aware pappusage plugin
-//    private fun aware(){
-//        AppusageSensor.start(applicationContext, AppusageSensor.Config().apply {
-//
-//            interval = 1000 //1sec
-//            usageAppDisplaynames = mutableListOf("com.twitter.android", "com.facebook.orca", "com.facebook.katana", "com.instagram.android", "jp.naver.line.android", "com.ss.android.ugc.trill")
-//            usageAppEventTypes = mutableListOf(UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_RESUMED)
-//
-//            awareUsageAppNotificationTitle = "studying now"
-//            awareUsageAppNotificationDescription = "App usage history is being retrieved."
-//            awareUsageAppNoticationId = "appusage_notification"
-//
-//            dbType = Engine.DatabaseType.ROOM
-//
-//            sensorObserver = object : AppusageSensor.Observer {
-//                override fun onDataChanged(datas: MutableList<AppusageData>?) {
-//                    println("ondatachanged in mainActivity $datas")
-//                }
-//            }
-//        })
-//    }
+    override fun onStop(){
+        super.onStop()
+        sensorManager
+    }
+
+    //Aware pappusage plugin
+    private fun aware(){
+        AppusageSensor.start(applicationContext, AppusageSensor.Config().apply {
+
+            interval = 1000 //1min
+            usageAppDisplaynames = mutableListOf("android")
+            usageAppEventTypes = mutableListOf(UsageEvents.Event.SCREEN_NON_INTERACTIVE, UsageEvents.Event.SCREEN_INTERACTIVE)
+
+            awareUsageAppNotificationTitle = "studying now"
+            awareUsageAppNotificationDescription = "App usage history is being retrieved."
+            awareUsageAppNoticationId = "appusage_notification"
+
+            dbType = Engine.DatabaseType.ROOM
+
+            sensorObserver = object : AppusageSensor.Observer {
+                override fun onDataChanged(datas: MutableList<AppusageData>?) {
+                    println("ondatachanged in mainActivity $datas")
+                    //ここをいじる
+                }
+            }
+        })
+    }
 
 
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
@@ -140,4 +163,15 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
     }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        val values = event!!.values
+        val formatter = SimpleDateFormat("hh:mm:ss.SSS", Locale.JAPANESE)
+        val timestamp = formatter.format(Date())  //str
+        val x = values[0].toDouble()
+        val y = values[1].toDouble()
+        val z = values[2].toDouble()
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 }

@@ -99,7 +99,7 @@ class AssistiveTouchService : Service() {
         mParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         mWindowManager!!.addView(mAssistiveTouchView, mParams)
 
-        mAssistiveTouchView!!.setOnTouchListener { v, event ->
+        mAssistiveTouchView!!.setOnTouchListener { _, event ->
             rawX = event.rawX
             rawY = event.rawY
             when (event.action) {
@@ -134,11 +134,12 @@ class AssistiveTouchService : Service() {
                 mParams!!.width = mScreenWidth
                 mParams!!.height = (mScreenWidth * 0.75).toInt()
             }
+            mParams!!.y = 1500//TODO: 反映されない。なぞ。
             mWindowManager!!.updateViewLayout(mAssistiveTouchView, mParams)
+
             mPopupWindow = PopupWindow(mInflateAssistiveTouchView)
             mPopupWindow!!.width = mScreenWidth // 横
             mPopupWindow!!.height = (mScreenWidth * 0.75).toInt() //縦
-
             //  ポップアップが閉じる処理
             mPopupWindow!!.setOnDismissListener {
                 mParams!!.width = WindowManager.LayoutParams.WRAP_CONTENT
@@ -155,8 +156,9 @@ class AssistiveTouchService : Service() {
 
             mPopupWindow!!.isFocusable = true
             mPopupWindow!!.isTouchable = true
-            mPopupWindow!!.setBackgroundDrawable(BitmapDrawable())
+            //mPopupWindow!!.setBackgroundDrawable(BitmapDrawable())
             mPopupWindow!!.showAtLocation(mAssistiveTouchView, Gravity.CENTER, 0, 0)
+
         } //AT押下時の処理
     }
 
