@@ -1,41 +1,33 @@
 package com.android.mirror.assisttouch.main
 
 import android.app.Activity
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import com.android.mirror.assisttouch.R
-import com.android.mirror.assisttouch.utils.SystemsUtils
-import android.content.ComponentName
-import com.android.mirror.assisttouch.MyAdminReceiver
-import android.content.Intent
-import android.app.admin.DevicePolicyManager
-import com.android.mirror.assisttouch.service.AssistiveTouchService
 import android.app.ActivityManager
 import android.app.AppOpsManager
-import android.app.usage.UsageEvents
-import android.content.Context
+import android.app.admin.DevicePolicyManager
+import android.content.*
 import android.content.pm.PackageManager
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import com.android.mirror.assisttouch.MyAdminReceiver
+import com.android.mirror.assisttouch.R
+import com.android.mirror.assisttouch.service.AssistiveTouchService
 import com.android.mirror.assisttouch.service.SensorService
 import com.android.mirror.assisttouch.service.SensorServiceInterface
-import com.android.mirror.assisttouch.service.SensorServiceListener
-import com.awareframework.android.core.db.Engine
-import com.awareframework.android.sensor.aware_appusage.AppusageSensor
-import com.awareframework.android.sensor.aware_appusage.model.AppusageData
-import java.security.Timestamp
-import java.sql.Time
+import com.android.mirror.assisttouch.utils.SystemsUtils
+import com.google.gson.Gson
+import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class MainActivity : AppCompatActivity(){
@@ -43,6 +35,10 @@ class MainActivity : AppCompatActivity(){
     private var startBtn: Button? = null
     private var sensorManager: SensorManager? = null
     val sensorService = SensorService(this)
+    var screenStatus:Boolean = false
+    var sensorData:MutableMap<String?, MutableList<MutableMap<String, String>>> = mutableMapOf()
+    val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS")
+    val gson:Gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +78,26 @@ class MainActivity : AppCompatActivity(){
         // Sensors
         sensorService.setListener(sensorListener)
         sensorService.start()
+
+        //screen
+        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_OFF)
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON)
+        val receiver = object: BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val action = intent!!.action
+                Log.d("Test", "receive : $action")
+
+                when (action) {
+                    Intent.ACTION_SCREEN_ON -> {
+                        screenStatus = true
+                    }
+                    Intent.ACTION_SCREEN_OFF -> {
+                        screenStatus = false
+                    }
+                }
+            }
+        }
+        registerReceiver(receiver, intentFilter)
         }
 
     private val sensorListener = object : SensorServiceInterface {
@@ -93,9 +109,14 @@ class MainActivity : AppCompatActivity(){
                 }
             }
             if (idx != -1) {
+                val date = LocalDateTime.now()
+                val li:MutableList<MutableMap<String, String>> = mutableListOf()
                 for(i in values.indices){
-                    Log.d("SensorData", "$sensorType ${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]} ${values[i]}")
+                    //Log.d("SensorData", "$sensorType ${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]} ${values[i]}")
+                    li.add(mutableMapOf("${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]}" to "${values[i]}"))
+
                 }
+                sensorData[date.format(dtf)] = li
             }
         }
 
@@ -105,31 +126,8 @@ class MainActivity : AppCompatActivity(){
     override fun onDestroy() {
         super.onDestroy()
         sensorService.stop()
+        val json = gson.toJson(sensorData)
     }
-
-    //Aware pappusage plugin
-    private fun aware(){
-        AppusageSensor.start(applicationContext, AppusageSensor.Config().apply {
-
-            interval = 1000 //1min
-            usageAppDisplaynames = mutableListOf("android")
-            usageAppEventTypes = mutableListOf(UsageEvents.Event.SCREEN_NON_INTERACTIVE, UsageEvents.Event.SCREEN_INTERACTIVE)
-
-            awareUsageAppNotificationTitle = "studying now"
-            awareUsageAppNotificationDescription = "App usage history is being retrieved."
-            awareUsageAppNoticationId = "appusage_notification"
-
-            dbType = Engine.DatabaseType.ROOM
-
-            sensorObserver = object : AppusageSensor.Observer {
-                override fun onDataChanged(datas: MutableList<AppusageData>?) {
-                    println("ondatachanged in mainActivity $datas")
-                    //ここをいじる
-                }
-            }
-        })
-    }
-
 
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager

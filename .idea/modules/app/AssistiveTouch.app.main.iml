@@ -60,6 +60,7 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/9617fac122dfc554e341d8aae1b66382/transformed/jetified-annotations-13.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/2f9270e734594b46f98c8041ce34759e/transformed/jetified-startup-runtime-1.1.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/8c856146f110d8771c4913fce50bb1cb/transformed/jetified-com.awareframework.android.core-master-SNAPSHOT-api.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/2b8cefa4948bbf63965db6a43d482070/transformed/jetified-gson-2.10.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/baadeebacdf48f334a5e1b8ce90ecd80/transformed/jetified-fuel-2.3.1.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/907b6d5b695fa2069022b5c84d22aa86/transformed/jetified-result-3.1.0.jar</arg>
                 <arg>$USER_HOME$/Library/Android/sdk/platforms/android-33/android.jar</arg>
@@ -163,6 +164,7 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-android-extensions-runtime:1.4.10" level="project" />
     <orderEntry type="library" name="Gradle: com.github.kittinunf.fuel:fuel:2.3.1" level="project" />
     <orderEntry type="library" name="Gradle: com.github.kittinunf.result:result:3.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.10" level="project" />
     <orderEntry type="library" name="Gradle: androidx.appcompat:appcompat:1.5.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.activity:activity:1.5.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.core:core:1.8.0@aar" level="project" />

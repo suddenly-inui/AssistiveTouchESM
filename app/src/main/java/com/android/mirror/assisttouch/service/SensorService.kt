@@ -7,6 +7,7 @@ import android.content.ServiceConnection
 import android.hardware.Sensor
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.Message
 
 interface SensorServiceInterface : SensorService.Listener{         // 独自のイベントリスナー
@@ -14,7 +15,7 @@ interface SensorServiceInterface : SensorService.Listener{         // 独自の�
     fun onAccuracyChanged(sensorType : Int,accuracy : Int)          // センサーレンジ変更イベント
 }
 
-class SensorService(private val context: Context) : Handler(){
+class SensorService(private val context: Context) : Handler(Looper.getMainLooper()){
 
     private lateinit var mService: SensorServiceListener
     private var listener: SensorServiceInterface? = null
