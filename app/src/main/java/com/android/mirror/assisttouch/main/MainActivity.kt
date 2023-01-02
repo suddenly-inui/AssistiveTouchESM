@@ -27,6 +27,9 @@ import android.view.View
 import android.widget.Button
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import com.android.mirror.assisttouch.service.SensorService
+import com.android.mirror.assisttouch.service.SensorServiceInterface
+import com.android.mirror.assisttouch.service.SensorServiceListener
 import com.awareframework.android.core.db.Engine
 import com.awareframework.android.sensor.aware_appusage.AppusageSensor
 import com.awareframework.android.sensor.aware_appusage.model.AppusageData
@@ -35,13 +38,12 @@ import java.sql.Time
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity(), SensorEventListener{
-
-    private var sensorManager: SensorManager? = null
-    private var accSensor: Sensor? = null
-    private var gyroSensor: Sensor? = null
+class MainActivity : AppCompatActivity(){
 
     private var startBtn: Button? = null
+    private var sensorManager: SensorManager? = null
+    val sensorService = SensorService(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -78,16 +80,31 @@ class MainActivity : AppCompatActivity(), SensorEventListener{
         }
 
         // Sensors
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-        accSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        gyroSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
-        sensorManager!!.registerListener(this, accSensor, SensorManager.SENSOR_DELAY_NORMAL)
-        sensorManager!!.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorService.setListener(sensorListener)
+        sensorService.start()
+        }
+
+    private val sensorListener = object : SensorServiceInterface {
+        override fun onSensorChanged(sensorType: Int, values: FloatArray) {
+            var idx = -1
+            for (i in 0 until sensorService.sensors.size) {
+                if (sensorService.sensors[i].type == sensorType) {
+                    idx = i
+                }
+            }
+            if (idx != -1) {
+                for(i in values.indices){
+                    Log.d("SensorData", "$sensorType ${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]} ${values[i]}")
+                }
+            }
+        }
+
+        override fun onAccuracyChanged(sensorType: Int, accuracy: Int) {}
     }
 
-    override fun onStop(){
-        super.onStop()
-        sensorManager
+    override fun onDestroy() {
+        super.onDestroy()
+        sensorService.stop()
     }
 
     //Aware pappusage plugin
@@ -163,15 +180,4 @@ class MainActivity : AppCompatActivity(), SensorEventListener{
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
     }
-
-    override fun onSensorChanged(event: SensorEvent?) {
-        val values = event!!.values
-        val formatter = SimpleDateFormat("hh:mm:ss.SSS", Locale.JAPANESE)
-        val timestamp = formatter.format(Date())  //str
-        val x = values[0].toDouble()
-        val y = values[1].toDouble()
-        val z = values[2].toDouble()
-    }
-
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 }
