@@ -5,10 +5,6 @@ import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.admin.DevicePolicyManager
 import android.content.*
-import android.app.usage.UsageEvents
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.SensorManager
 import android.net.Uri
@@ -23,32 +19,29 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.android.mirror.assisttouch.MyAdminReceiver
 import com.android.mirror.assisttouch.R
-import com.android.mirror.assisttouch.service.AssistiveTouchService
-import com.android.mirror.assisttouch.service.SensorService
-import com.android.mirror.assisttouch.service.SensorServiceInterface
+import com.android.mirror.assisttouch.service.*
 import com.android.mirror.assisttouch.utils.SystemsUtils
-import com.google.gson.Gson
-import java.text.DateFormat
-import java.text.SimpleDateFormat
+import java.io.BufferedReader
+import java.io.File
+import java.io.InputStreamReader
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import com.awareframework.android.core.db.Engine
-import com.awareframework.android.sensor.aware_appusage.AppusageSensor
-import com.awareframework.android.sensor.aware_appusage.model.AppusageData
 import java.util.*
+
 
 class MainActivity : AppCompatActivity(){
 
+    val jd:JsonData = JsonData.getInstance()
     private var startBtn: Button? = null
     private var sensorManager: SensorManager? = null
     val sensorService = SensorService(this)
     var screenStatus:Boolean = false
-    var sensorData:MutableMap<String?, MutableList<MutableMap<String, String>>> = mutableMapOf()
     val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS")
-    val gson:Gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        jd.filename = applicationContext.filesDir
 
         setContentView(R.layout.activity_main)
         Log.d("Mirror", SystemsUtils.isRooted().toString() + " ")
@@ -59,15 +52,15 @@ class MainActivity : AppCompatActivity(){
         startActivityForResult(intent, 0)  //TODO: 直す
 
         // Permissions
-        if(checkOverlayPermission()){
+        if (checkOverlayPermission()) {
             println("Overlay permission true")
-        }else{
+        } else {
             requestOverlayPermission()
         }
 
-        if(checkReadStatsPermission()){
+        if (checkReadStatsPermission()) {
             println("ReadStates permission true")
-        }else{
+        } else {
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         }
 
@@ -89,7 +82,7 @@ class MainActivity : AppCompatActivity(){
         //screen
         val intentFilter = IntentFilter(Intent.ACTION_SCREEN_OFF)
         intentFilter.addAction(Intent.ACTION_SCREEN_ON)
-        val receiver = object: BroadcastReceiver() {
+        val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val action = intent!!.action
                 Log.d("Test", "receive : $action")
@@ -105,7 +98,7 @@ class MainActivity : AppCompatActivity(){
             }
         }
         registerReceiver(receiver, intentFilter)
-        }
+    }
 
     private val sensorListener = object : SensorServiceInterface {
         override fun onSensorChanged(sensorType: Int, values: FloatArray) {
@@ -123,7 +116,7 @@ class MainActivity : AppCompatActivity(){
                     li.add(mutableMapOf("${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]}" to "${values[i]}"))
 
                 }
-                sensorData[date.format(dtf)] = li
+                jd.sensorData[date.format(dtf)] = li
             }
         }
 
@@ -133,7 +126,7 @@ class MainActivity : AppCompatActivity(){
     override fun onDestroy() {
         super.onDestroy()
         sensorService.stop()
-        val json = gson.toJson(sensorData)
+
     }
 
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {

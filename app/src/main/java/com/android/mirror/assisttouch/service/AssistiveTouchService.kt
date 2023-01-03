@@ -7,6 +7,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.drawable.BitmapDrawable
@@ -18,13 +19,21 @@ import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.PopupWindow
+import androidx.annotation.RequiresApi
 import com.android.mirror.assisttouch.R
 import com.android.mirror.assisttouch.utils.SystemsUtils
+import com.google.gson.Gson
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import java.io.File
+import java.io.FileWriter
 import java.io.IOException
+import java.io.PrintWriter
+import java.nio.charset.Charset
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.log
+
 
 
 class AssistiveTouchService : Service() {
@@ -46,6 +55,9 @@ class AssistiveTouchService : Service() {
     private var mTimer: Timer? = null
     private var mHandler: Handler? = null
     private var mInflater: LayoutInflater? = null
+    private var jd: JsonData = JsonData.getInstance()
+    private val gson:Gson = Gson()
+
     override fun onCreate() {
         super.onCreate()
         init()
@@ -192,6 +204,12 @@ class AssistiveTouchService : Service() {
             //電源オフ」
             SystemsUtils.shutDown(this@AssistiveTouchService)
 
+            //label更新
+            jd.label = "off"
+
+            //データ保存
+            jd.saveJson()
+
             //ATを格納
             mTimer!!.schedule(object : TimerTask() {
                 override fun run() {
@@ -199,19 +217,19 @@ class AssistiveTouchService : Service() {
                 }
             }, 600)
 
-            //HTTP　POST
-            val url = "http://133.27.186.95"
-            val json = "{\"user\":{" +
-                    "\"name\":\"name1\"," +
-                    "\"password\":\"password\"," +
-                    "\"password_confirmation\":\"password\"" +
-                    "}}"
-            try {
-                HTTPPost(url, json)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                println(e)
-            }
+//            //HTTP　POST
+//            val url = "http://133.27.186.95"
+//            val json = "{\"user\":{" +
+//                    "\"name\":\"name1\"," +
+//                    "\"password\":\"password\"," +
+//                    "\"password_confirmation\":\"password\"" +
+//                    "}}"
+//            try {
+//                HTTPPost(url, json)
+//            } catch (e: IOException) {
+//                e.printStackTrace()
+//                println(e)
+//            }
         }
     } // ポップアップ内の機能押下時の処理
 
