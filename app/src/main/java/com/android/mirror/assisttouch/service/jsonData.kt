@@ -16,7 +16,7 @@ class JsonData: Application() {
     var filename:File? = null
 
 
-    fun saveJson(){  //TODO: こいつ！！！！！
+    fun saveJson(){
         val wholeJson: MutableMap<String, MutableMap<String, MutableList<MutableMap<String, String>>>> = mutableMapOf()
         wholeJson[label.toString()] = sensorData
         val json = gson.toJson(wholeJson)

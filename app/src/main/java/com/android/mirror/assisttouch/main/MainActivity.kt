@@ -1,9 +1,11 @@
 package com.android.mirror.assisttouch.main
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.admin.DevicePolicyManager
+import android.app.usage.UsageEvents
 import android.content.*
 import android.content.pm.PackageManager
 import android.hardware.SensorManager
@@ -21,6 +23,9 @@ import com.android.mirror.assisttouch.MyAdminReceiver
 import com.android.mirror.assisttouch.R
 import com.android.mirror.assisttouch.service.*
 import com.android.mirror.assisttouch.utils.SystemsUtils
+import com.awareframework.android.core.db.Engine
+import com.awareframework.android.sensor.aware_appusage.AppusageSensor
+import com.awareframework.android.sensor.aware_appusage.model.AppusageData
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -98,6 +103,31 @@ class MainActivity : AppCompatActivity(){
             }
         }
         registerReceiver(receiver, intentFilter)
+
+        //aware
+        aware()
+    }
+
+    //TODO: このエラーはライブラリ(AppUsageSensor.kt)に起因しているのでimplementationしているgithubをクローンして書き換えることで解決しよう！めんどくさいね！
+    private fun aware(){
+        AppusageSensor.start(applicationContext, AppusageSensor.Config().apply {
+
+            interval = 1000 //1min
+            usageAppDisplaynames = mutableListOf("com.google.android.youtube")
+            usageAppEventTypes = mutableListOf(UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_RESUMED)
+
+            awareUsageAppNotificationTitle = "studying now"
+            awareUsageAppNotificationDescription = "App usage history is being retrieved."
+            awareUsageAppNoticationId = "appusage_notification"
+
+            dbType = Engine.DatabaseType.ROOM
+
+            sensorObserver = object : AppusageSensor.Observer {
+                override fun onDataChanged(datas: MutableList<AppusageData>?) {
+                    println("ondatachanged in mainActivity $datas")
+                }
+            }
+        })
     }
 
     private val sensorListener = object : SensorServiceInterface {

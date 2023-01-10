@@ -7,10 +7,8 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -19,21 +17,12 @@ import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.PopupWindow
-import androidx.annotation.RequiresApi
 import com.android.mirror.assisttouch.R
 import com.android.mirror.assisttouch.utils.SystemsUtils
 import com.google.gson.Gson
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
-import java.io.PrintWriter
-import java.nio.charset.Charset
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.math.log
-
 
 
 class AssistiveTouchService : Service() {
@@ -57,6 +46,8 @@ class AssistiveTouchService : Service() {
     private var mInflater: LayoutInflater? = null
     private var jd: JsonData = JsonData.getInstance()
     private val gson:Gson = Gson()
+    private val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("ss.S")
+    private var t = System.currentTimeMillis()
 
     override fun onCreate() {
         super.onCreate()
@@ -111,28 +102,13 @@ class AssistiveTouchService : Service() {
         mParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         mWindowManager!!.addView(mAssistiveTouchView, mParams)
 
-        mAssistiveTouchView!!.setOnTouchListener { _, event ->
-            rawX = event.rawX
-            rawY = event.rawY
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> isMoving = false
-                MotionEvent.ACTION_UP -> {
-                    setAssitiveTouchViewAlign()
-                } // 角に戻る処理
-                MotionEvent.ACTION_MOVE -> {
-                    isMoving = true
-                    mParams!!.x = (rawX - mAssistiveTouchView!!.measuredWidth / 2).toInt()
-                    mParams!!.y =
-                        (rawY - mAssistiveTouchView!!.measuredHeight / 2 - mStatusBarHeight).toInt()
-                    mWindowManager!!.updateViewLayout(mAssistiveTouchView, mParams)
-                }
+        fun inflateATview(){
+            mAssistiveTouchView!!.alpha = 0f
+            if(mParams!!.x > mScreenWidth/2){
+                lastAssistiveTouchViewX = mScreenWidth
+            }else{
+                lastAssistiveTouchViewX = 0
             }
-            isMoving
-        } // ATに触れた時の処理
-
-        mAssistiveTouchView!!.setOnClickListener {     //AT押下時の処理
-            //mAssistiveTouchView!!.alpha = 0f
-            lastAssistiveTouchViewX = mParams!!.x
             lastAssistiveTouchViewY = mParams!!.y
 //            myAssistiveTouchAnimator(
 //                mParams!!.x,
@@ -146,7 +122,7 @@ class AssistiveTouchService : Service() {
                 mParams!!.width = mScreenWidth
                 mParams!!.height = (mScreenWidth * 0.75).toInt()
             }
-            mParams!!.y = 1500//TODO: 反映されない。なぞ。
+            mParams!!.y = mScreenHeight/2//
             mWindowManager!!.updateViewLayout(mAssistiveTouchView, mParams)
 
             mPopupWindow = PopupWindow(mInflateAssistiveTouchView)
@@ -163,49 +139,61 @@ class AssistiveTouchService : Service() {
                     lastAssistiveTouchViewY,
                     true
                 ).start()
-                mAssistiveTouchView!!.alpha = 1f
+                mAssistiveTouchView!!.alpha = .85f
             }
 
             mPopupWindow!!.isFocusable = true
             mPopupWindow!!.isTouchable = true
             //mPopupWindow!!.setBackgroundDrawable(BitmapDrawable())
             mPopupWindow!!.showAtLocation(mAssistiveTouchView, Gravity.CENTER, 0, 0)
+        }
 
+        mAssistiveTouchView!!.setOnTouchListener { _, event ->
+            rawX = event.rawX
+            rawY = event.rawY
+
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    isMoving = false
+                    t = System.currentTimeMillis()
+                }
+                MotionEvent.ACTION_UP -> {
+                    if(System.currentTimeMillis() - t < 100){
+                        mAssistiveTouchView!!.alpha = 0f
+                        inflateATview()
+                    }else{
+                        setAssitiveTouchViewAlign()
+                    }
+                } // 角に戻る処理
+                MotionEvent.ACTION_MOVE -> {
+                    isMoving = true
+                    mParams!!.x = (rawX - mAssistiveTouchView!!.measuredWidth / 2).toInt()
+                    mParams!!.y =
+                        (rawY - mAssistiveTouchView!!.measuredHeight / 2 - mStatusBarHeight).toInt()
+                    mWindowManager!!.updateViewLayout(mAssistiveTouchView, mParams)
+                }
+            }
+            isMoving
+        } // ATに触れた時の処理
+
+        mAssistiveTouchView!!.setOnClickListener {     //AT押下時の処理
+            inflateATview()
         } //AT押下時の処理
-    }
 
-    @Throws(IOException::class)
-    fun HTTPPost(u: String, json: String) {
-        val mediaTypeJson = ("application/json; charset=utf-8").toMediaTypeOrNull()
-        val requestBody = RequestBody.create(mediaTypeJson, json)
-        val request = Request.Builder()
-            .url(u)
-            .post(requestBody)
-            .build()
-        val client = OkHttpClient.Builder()
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            @Throws(IOException::class)
-            override fun onResponse(call: Call, response: Response) {
-                val resString = response.body!!.string()
-                //view更新のときは handler#post()する
-                println(resString)
-            }
 
-            override fun onFailure(call: Call, e: IOException) {
-                println(e)
-            }
-        })
     }
 
     private fun inflateViewListener() {
-        val shutdown = mInflateAssistiveTouchView!!.findViewById<View>(R.id.shutdown) as ImageView
-        shutdown.setOnClickListener {
+        val shutdown1 = mInflateAssistiveTouchView!!.findViewById<View>(R.id.shutdown1) as ImageView
+        val shutdown2 = mInflateAssistiveTouchView!!.findViewById<View>(R.id.shutdown2) as ImageView
+        val shutdown3 = mInflateAssistiveTouchView!!.findViewById<View>(R.id.shutdown3) as ImageView
+
+        fun shutdown(l:String){
             //電源オフ」
             SystemsUtils.shutDown(this@AssistiveTouchService)
 
             //label更新
-            jd.label = "off"
+            jd.label = l
 
             //データ保存
             jd.saveJson()
@@ -216,21 +204,10 @@ class AssistiveTouchService : Service() {
                     mHandler!!.sendEmptyMessage(0)
                 }
             }, 600)
-
-//            //HTTP　POST
-//            val url = "http://133.27.186.95"
-//            val json = "{\"user\":{" +
-//                    "\"name\":\"name1\"," +
-//                    "\"password\":\"password\"," +
-//                    "\"password_confirmation\":\"password\"" +
-//                    "}}"
-//            try {
-//                HTTPPost(url, json)
-//            } catch (e: IOException) {
-//                e.printStackTrace()
-//                println(e)
-//            }
         }
+        shutdown1.setOnClickListener {shutdown("1")}
+        shutdown2.setOnClickListener {shutdown("2")}
+        shutdown3.setOnClickListener {shutdown("3")}
     } // ポップアップ内の機能押下時の処理
 
     private fun myAssistiveTouchAnimator(
