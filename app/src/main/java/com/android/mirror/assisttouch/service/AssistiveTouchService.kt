@@ -130,6 +130,7 @@ class AssistiveTouchService : Service() {
             mPopupWindow!!.height = (mScreenWidth * 0.75).toInt() //縦
             //  ポップアップが閉じる処理
             mPopupWindow!!.setOnDismissListener {
+                mPopupWindow!!.dismiss()
                 mParams!!.width = WindowManager.LayoutParams.WRAP_CONTENT
                 mParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
                 myAssistiveTouchAnimator(
@@ -177,7 +178,7 @@ class AssistiveTouchService : Service() {
         } // ATに触れた時の処理
 
         mAssistiveTouchView!!.setOnClickListener {     //AT押下時の処理
-            inflateATview()
+            //inflateATview()
         } //AT押下時の処理
 
 
