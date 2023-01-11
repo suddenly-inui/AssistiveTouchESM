@@ -48,7 +48,7 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/894a7eea414a4574d31ced3b30b43f7d/transformed/jetified-kotlin-reflect-1.7.20.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/b2378f057608b14e9cb7256eb83a91e0/transformed/jetified-okhttp-4.10.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/116b3b68a82d04711626398aac3e9339/transformed/jetified-fuel-android-2.3.1-api.jar</arg>
-                <arg>$USER_HOME$/.gradle/caches/transforms-3/d1765a06360a3f4d68884dd63427550a/transformed/jetified-aware_appusage_plugin-ver1.0-api.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/7ece2c0f29162573c9af28f12d5fd373/transformed/jetified-AppUsagePlugin-for-MyUse-ver1.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/c815a82dfd3af8fc67a0dab4b5a2c24d/transformed/jetified-kotlinx-coroutines-core-jvm-1.6.1.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/24a6db4588b14e602e31dfa797791b8c/transformed/jetified-kotlinx-coroutines-android-1.6.1.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/ed929332c9f2a54ebb8dc88f97846702/transformed/jetified-okio-jvm-3.0.0.jar</arg>
@@ -181,7 +181,7 @@
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.work:work-runtime-ktx:2.7.1@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.work:work-runtime:2.7.1@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.startup:startup-runtime:1.1.1@aar" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.github.KarasawaTakumi0621:aware_appusage_plugin:ver1.0@aar" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.github.suddenly-inui:AppUsagePlugin-for-MyUse:ver1.0@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.github.awareframework:com.awareframework.android.core:master-SNAPSHOT@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.github.kittinunf.fuel:fuel-android:2.3.1@aar" level="project" />
   </component>
