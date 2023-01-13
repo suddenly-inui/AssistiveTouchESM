@@ -197,7 +197,9 @@ class AssistiveTouchService : Service() {
             jd.label = l
 
             //データ保存
-            jd.saveJson()
+            //jd.saveJson()
+            jd.saveAcc(output = true)
+            jd.saveGyro(output = true)
 
             //ATを格納
             mTimer!!.schedule(object : TimerTask() {

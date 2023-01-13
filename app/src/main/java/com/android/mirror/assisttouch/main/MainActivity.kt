@@ -108,7 +108,6 @@ class MainActivity : AppCompatActivity(){
         aware()
     }
 
-    //TODO: このエラーはライブラリ(AppUsageSensor.kt)に起因しているのでimplementationしているgithubをクローンして書き換えることで解決しよう！めんどくさいね！
     private fun aware(){
         AppusageSensor.start(applicationContext, AppusageSensor.Config().apply {
 
@@ -138,16 +137,24 @@ class MainActivity : AppCompatActivity(){
                     idx = i
                 }
             }
-            if (idx != -1) {
-                val date = LocalDateTime.now()
-                val li:MutableList<MutableMap<String, String>> = mutableListOf()
-                for(i in values.indices){
-                    //Log.d("SensorData", "$sensorType ${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]} ${values[i]}")
-                    li.add(mutableMapOf("${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]}" to "${values[i]}"))
 
-                }
-                jd.sensorData[date.format(dtf)] = li
+            if(sensorType == 1){
+                jd.saveAcc(values, false)
+            }else if(sensorType == 4){
+                jd.saveGyro(values, false)
             }
+
+//            if (idx != -1) {
+//                val date = LocalDateTime.now()
+//                val li:MutableList<MutableMap<String, String>> = mutableListOf()
+//                for(i in values.indices){
+//                    Log.d("SensorData", "$idx $sensorType ${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]} ${values[i]}")
+//                    //li.add(mutableMapOf("${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]}" to "${values[i]}"))
+//
+//
+//                }
+//                jd.sensorData[date.format(dtf)] = li
+//            }
         }
 
         override fun onAccuracyChanged(sensorType: Int, accuracy: Int) {}
