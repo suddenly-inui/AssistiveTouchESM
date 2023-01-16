@@ -72,7 +72,7 @@
                             android:layout_width="62dp"
                             android:layout_height="62dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/shutdown" />
+                            android:src="@drawable/sad" />
 
                         <Space
                             android:layout_width="0dp"
@@ -84,7 +84,7 @@
                             android:layout_width="62dp"
                             android:layout_height="62dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/shutdown" />
+                            android:src="@drawable/normal" />
 
                         <Space
                             android:layout_width="0dp"
@@ -96,7 +96,7 @@
                             android:layout_width="62dp"
                             android:layout_height="62dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/shutdown" />
+                            android:src="@drawable/smile" />
                         <Space
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"

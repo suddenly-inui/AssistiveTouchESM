@@ -26,10 +26,6 @@ import com.android.mirror.assisttouch.utils.SystemsUtils
 import com.awareframework.android.core.db.Engine
 import com.awareframework.android.sensor.aware_appusage.AppusageSensor
 import com.awareframework.android.sensor.aware_appusage.model.AppusageData
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStreamReader
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -40,9 +36,10 @@ class MainActivity : AppCompatActivity(){
     private var startBtn: Button? = null
     private var sensorManager: SensorManager? = null
     val sensorService = SensorService(this)
-    var screenStatus:Boolean = false
+    var screenStatus:Boolean = true
     val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS")
 
+    @SuppressLint("QueryPermissionsNeeded")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -69,6 +66,16 @@ class MainActivity : AppCompatActivity(){
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         }
 
+        val flags =
+            PackageManager.MATCH_UNINSTALLED_PACKAGES or PackageManager.MATCH_DISABLED_COMPONENTS
+        val packageManager = packageManager
+        val installedAppList = packageManager.getInstalledApplications(flags)
+        println(installedAppList)
+        val appList:MutableList<String> = mutableListOf()
+        for(i in installedAppList){
+            appList.add(i.packageName)
+        }
+
         // Start or Stop
         startBtn = findViewById<View>(R.id.startBtn) as Button
         startBtn!!.setOnClickListener {
@@ -79,6 +86,7 @@ class MainActivity : AppCompatActivity(){
                 startService(intent1)
             }
         }
+
 
         // Sensors
         sensorService.setListener(sensorListener)
@@ -105,14 +113,15 @@ class MainActivity : AppCompatActivity(){
         registerReceiver(receiver, intentFilter)
 
         //aware
-        aware()
+        aware(appList)
     }
 
-    private fun aware(){
+    private fun aware(list: MutableList<String>){
         AppusageSensor.start(applicationContext, AppusageSensor.Config().apply {
 
-            interval = 1000 //1min
-            usageAppDisplaynames = mutableListOf("com.google.android.youtube")
+            interval = 1000
+            usageAppDisplaynames = list
+            //usageAppDisplaynames = mutableListOf("com.google.android.youtube")
             usageAppEventTypes = mutableListOf(UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_RESUMED)
 
             awareUsageAppNotificationTitle = "studying now"
@@ -123,7 +132,7 @@ class MainActivity : AppCompatActivity(){
 
             sensorObserver = object : AppusageSensor.Observer {
                 override fun onDataChanged(datas: MutableList<AppusageData>?) {
-                    println("ondatachanged in mainActivity $datas")
+                    jd.saveApp(datas, false)
                 }
             }
         })
@@ -131,30 +140,22 @@ class MainActivity : AppCompatActivity(){
 
     private val sensorListener = object : SensorServiceInterface {
         override fun onSensorChanged(sensorType: Int, values: FloatArray) {
-            var idx = -1
-            for (i in 0 until sensorService.sensors.size) {
-                if (sensorService.sensors[i].type == sensorType) {
-                    idx = i
+            if(screenStatus){
+                var idx = -1
+                for (i in 0 until sensorService.sensors.size) {
+                    if (sensorService.sensors[i].type == sensorType) {
+                        idx = i
+                    }
                 }
-            }
 
-            if(sensorType == 1){
-                jd.saveAcc(values, false)
-            }else if(sensorType == 4){
-                jd.saveGyro(values, false)
+                if(sensorType == 1){
+                    jd.saveAcc(values, false)
+                }else if(sensorType == 4){
+                    jd.saveGyro(values, false)
+                }
+            }else{
+                jd.resetData()
             }
-
-//            if (idx != -1) {
-//                val date = LocalDateTime.now()
-//                val li:MutableList<MutableMap<String, String>> = mutableListOf()
-//                for(i in values.indices){
-//                    Log.d("SensorData", "$idx $sensorType ${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]} ${values[i]}")
-//                    //li.add(mutableMapOf("${sensorService.sensors[idx].name} ${listOf("X", "Y", "Z")[i]}" to "${values[i]}"))
-//
-//
-//                }
-//                jd.sensorData[date.format(dtf)] = li
-//            }
         }
 
         override fun onAccuracyChanged(sensorType: Int, accuracy: Int) {}
