@@ -159,7 +159,7 @@ class AssistiveTouchService : Service() {
                     t = System.currentTimeMillis()
                 }
                 MotionEvent.ACTION_UP -> {
-                    if(System.currentTimeMillis() - t < 100){
+                    if(System.currentTimeMillis() - t < 150){
                         mAssistiveTouchView!!.alpha = 0f
                         inflateATview()
                     }else{
